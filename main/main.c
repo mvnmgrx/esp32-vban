@@ -37,10 +37,10 @@
 #include "vban/vban_frame.h"
 #include "vban/vban_ringbuf.h"
 
-//#if defined(CONFIG_EXAMPLE_IPV4)
-//#define HOST_IP_ADDR CONFIG_EXAMPLE_IPV4_ADDR
-//#elif defined(CONFIG_EXAMPLE_IPV6)
-//#define HOST_IP_ADDR CONFIG_EXAMPLE_IPV6_ADDR
+//#if defined(CONFIG_ESP32_VBAN_IPV4)
+//#define HOST_IP_ADDR CONFIG_ESP32_VBAN_IPV4_ADDR
+//#elif defined(CONFIG_ESP32_VBAN_IPV6)
+//#define HOST_IP_ADDR CONFIG_ESP32_VBAN_IPV6_ADDR
 //#else//
 //#define HOST_IP_ADDR ""
 //#endif
@@ -69,13 +69,13 @@ typedef struct COUNTERS {
 
 static const char *TAG = "vban";
 
-#if CONFIG_EXAMPLE_USE_SPI_ETHERNET
+#if CONFIG_ESP32_VBAN_USE_SPI_ETHERNET
 #define INIT_SPI_ETH_MODULE_CONFIG(eth_module_config, num)                                      \
     do {                                                                                        \
-        eth_module_config[num].spi_cs_gpio = CONFIG_EXAMPLE_ETH_SPI_CS ##num## _GPIO;           \
-        eth_module_config[num].int_gpio = CONFIG_EXAMPLE_ETH_SPI_INT ##num## _GPIO;             \
-        eth_module_config[num].phy_reset_gpio = CONFIG_EXAMPLE_ETH_SPI_PHY_RST ##num## _GPIO;   \
-        eth_module_config[num].phy_addr = CONFIG_EXAMPLE_ETH_SPI_PHY_ADDR ##num;                \
+        eth_module_config[num].spi_cs_gpio = CONFIG_ESP32_VBAN_ETH_SPI_CS ##num## _GPIO;           \
+        eth_module_config[num].int_gpio = CONFIG_ESP32_VBAN_ETH_SPI_INT ##num## _GPIO;             \
+        eth_module_config[num].phy_reset_gpio = CONFIG_ESP32_VBAN_ETH_SPI_PHY_RST ##num## _GPIO;   \
+        eth_module_config[num].phy_addr = CONFIG_ESP32_VBAN_ETH_SPI_PHY_ADDR ##num;                \
     } while(0)
 
 typedef struct {
@@ -87,10 +87,10 @@ typedef struct {
 #endif
 
 
-#define EXAMPLE_STD_MCLK_IO1        0
-#define EXAMPLE_STD_BCLK_IO1        15
-#define EXAMPLE_STD_WS_IO1          14
-#define EXAMPLE_STD_DOUT_IO1        12
+#define ESP32_VBAN_STD_MCLK_IO1        0
+#define ESP32_VBAN_STD_BCLK_IO1        15
+#define ESP32_VBAN_STD_WS_IO1          14
+#define ESP32_VBAN_STD_DOUT_IO1        12
 
 #define MAX_UDP_BYTES_PER_PACKET    1472
 #define MAX_VBAN_NO_DATA_CNT        50
@@ -112,10 +112,10 @@ static i2s_std_config_t tx_std_cfg = {
     },
     .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_24BIT, I2S_SLOT_MODE_STEREO),
     .gpio_cfg = {
-        .mclk = EXAMPLE_STD_MCLK_IO1,
-        .bclk = EXAMPLE_STD_BCLK_IO1,
-        .ws   = EXAMPLE_STD_WS_IO1,
-        .dout = EXAMPLE_STD_DOUT_IO1,
+        .mclk = ESP32_VBAN_STD_MCLK_IO1,
+        .bclk = ESP32_VBAN_STD_BCLK_IO1,
+        .ws   = ESP32_VBAN_STD_WS_IO1,
+        .dout = ESP32_VBAN_STD_DOUT_IO1,
         .din  = I2S_GPIO_UNUSED,
         .invert_flags = {
             .mclk_inv = false,
@@ -243,7 +243,7 @@ static void udp_server_task(void *pvParameters)
         }
         ESP_LOGI(TAG, "Socket created");
 
-#if defined(CONFIG_EXAMPLE_IPV4) && defined(CONFIG_EXAMPLE_IPV6)
+#if defined(CONFIG_ESP32_VBAN_IPV4) && defined(CONFIG_ESP32_VBAN_IPV6)
         if (addr_family == AF_INET6) {
             // Note that by default IPV6 binds to both protocols, it is must be disabled
             // if both protocols used at the same time (used in CI)
@@ -432,7 +432,7 @@ void app_main(void)
     // Create default event loop that running in background
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-#if CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
+#if CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET
     // Create new default instance of esp-netif for Ethernet
     esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
     esp_netif_t *eth_netif = esp_netif_new(&cfg);
@@ -441,21 +441,21 @@ void app_main(void)
     eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
     eth_phy_config_t phy_config = ETH_PHY_DEFAULT_CONFIG();
 
-    phy_config.phy_addr = CONFIG_EXAMPLE_ETH_PHY_ADDR;
-    phy_config.reset_gpio_num = CONFIG_EXAMPLE_ETH_PHY_RST_GPIO;
+    phy_config.phy_addr = CONFIG_ESP32_VBAN_ETH_PHY_ADDR;
+    phy_config.reset_gpio_num = CONFIG_ESP32_VBAN_ETH_PHY_RST_GPIO;
     eth_esp32_emac_config_t esp32_emac_config = ETH_ESP32_EMAC_DEFAULT_CONFIG();
-    esp32_emac_config.smi_mdc_gpio_num = CONFIG_EXAMPLE_ETH_MDC_GPIO;
-    esp32_emac_config.smi_mdio_gpio_num = CONFIG_EXAMPLE_ETH_MDIO_GPIO;
+    esp32_emac_config.smi_mdc_gpio_num = CONFIG_ESP32_VBAN_ETH_MDC_GPIO;
+    esp32_emac_config.smi_mdio_gpio_num = CONFIG_ESP32_VBAN_ETH_MDIO_GPIO;
     esp_eth_mac_t *mac = esp_eth_mac_new_esp32(&esp32_emac_config, &mac_config);
-#if CONFIG_EXAMPLE_ETH_PHY_IP101
+#if CONFIG_ESP32_VBAN_ETH_PHY_IP101
     esp_eth_phy_t *phy = esp_eth_phy_new_ip101(&phy_config);
-#elif CONFIG_EXAMPLE_ETH_PHY_RTL8201
+#elif CONFIG_ESP32_VBAN_ETH_PHY_RTL8201
     esp_eth_phy_t *phy = esp_eth_phy_new_rtl8201(&phy_config);
-#elif CONFIG_EXAMPLE_ETH_PHY_LAN87XX
+#elif CONFIG_ESP32_VBAN_ETH_PHY_LAN87XX
     esp_eth_phy_t *phy = esp_eth_phy_new_lan87xx(&phy_config);
-#elif CONFIG_EXAMPLE_ETH_PHY_DP83848
+#elif CONFIG_ESP32_VBAN_ETH_PHY_DP83848
     esp_eth_phy_t *phy = esp_eth_phy_new_dp83848(&phy_config);
-#elif CONFIG_EXAMPLE_ETH_PHY_KSZ80XX
+#elif CONFIG_ESP32_VBAN_ETH_PHY_KSZ80XX
     esp_eth_phy_t *phy = esp_eth_phy_new_ksz80xx(&phy_config);
 #endif
     esp_eth_config_t config = ETH_DEFAULT_CONFIG(mac, phy);
@@ -463,20 +463,20 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_eth_driver_install(&config, &eth_handle));
     /* attach Ethernet driver to TCP/IP stack */
     ESP_ERROR_CHECK(esp_netif_attach(eth_netif, esp_eth_new_netif_glue(eth_handle)));
-#endif //CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
+#endif //CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET
 
-#if CONFIG_EXAMPLE_USE_SPI_ETHERNET
+#if CONFIG_ESP32_VBAN_USE_SPI_ETHERNET
     // Create instance(s) of esp-netif for SPI Ethernet(s)
     esp_netif_inherent_config_t esp_netif_config = ESP_NETIF_INHERENT_DEFAULT_ETH();
     esp_netif_config_t cfg_spi = {
         .base = &esp_netif_config,
         .stack = ESP_NETIF_NETSTACK_DEFAULT_ETH
     };
-    esp_netif_t *eth_netif_spi[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM] = { NULL };
+    esp_netif_t *eth_netif_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM] = { NULL };
     char if_key_str[10];
     char if_desc_str[10];
     char num_str[3];
-    for (int i = 0; i < CONFIG_EXAMPLE_SPI_ETHERNETS_NUM; i++) {
+    for (int i = 0; i < CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM; i++) {
         itoa(i, num_str, 10);
         strcat(strcpy(if_key_str, "ETH_SPI_"), num_str);
         strcat(strcpy(if_desc_str, "eth"), num_str);
@@ -495,48 +495,48 @@ void app_main(void)
 
     // Init SPI bus
     spi_bus_config_t buscfg = {
-        .miso_io_num = CONFIG_EXAMPLE_ETH_SPI_MISO_GPIO,
-        .mosi_io_num = CONFIG_EXAMPLE_ETH_SPI_MOSI_GPIO,
-        .sclk_io_num = CONFIG_EXAMPLE_ETH_SPI_SCLK_GPIO,
+        .miso_io_num = CONFIG_ESP32_VBAN_ETH_SPI_MISO_GPIO,
+        .mosi_io_num = CONFIG_ESP32_VBAN_ETH_SPI_MOSI_GPIO,
+        .sclk_io_num = CONFIG_ESP32_VBAN_ETH_SPI_SCLK_GPIO,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
     };
-    ESP_ERROR_CHECK(spi_bus_initialize(CONFIG_EXAMPLE_ETH_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO));
+    ESP_ERROR_CHECK(spi_bus_initialize(CONFIG_ESP32_VBAN_ETH_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO));
 
     // Init specific SPI Ethernet module configuration from Kconfig (CS GPIO, Interrupt GPIO, etc.)
-    spi_eth_module_config_t spi_eth_module_config[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM];
+    spi_eth_module_config_t spi_eth_module_config[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM];
     INIT_SPI_ETH_MODULE_CONFIG(spi_eth_module_config, 0);
-#if CONFIG_EXAMPLE_SPI_ETHERNETS_NUM > 1
+#if CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM > 1
     INIT_SPI_ETH_MODULE_CONFIG(spi_eth_module_config, 1);
 #endif
 
     // Configure SPI interface and Ethernet driver for specific SPI module
-    esp_eth_mac_t *mac_spi[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM];
-    esp_eth_phy_t *phy_spi[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM];
-    esp_eth_handle_t eth_handle_spi[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM] = { NULL };
+    esp_eth_mac_t *mac_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM];
+    esp_eth_phy_t *phy_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM];
+    esp_eth_handle_t eth_handle_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM] = { NULL };
     spi_device_interface_config_t spi_devcfg = {
         .mode = 0,
-        .clock_speed_hz = CONFIG_EXAMPLE_ETH_SPI_CLOCK_MHZ * 1000 * 1000,
+        .clock_speed_hz = CONFIG_ESP32_VBAN_ETH_SPI_CLOCK_MHZ * 1000 * 1000,
         .queue_size = 20
     };
-    for (int i = 0; i < CONFIG_EXAMPLE_SPI_ETHERNETS_NUM; i++) {
+    for (int i = 0; i < CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM; i++) {
         // Set SPI module Chip Select GPIO
         spi_devcfg.spics_io_num = spi_eth_module_config[i].spi_cs_gpio;
         // Set remaining GPIO numbers and configuration used by the SPI module
         phy_config_spi.phy_addr = spi_eth_module_config[i].phy_addr;
         phy_config_spi.reset_gpio_num = spi_eth_module_config[i].phy_reset_gpio;
-#if CONFIG_EXAMPLE_USE_KSZ8851SNL
-        eth_ksz8851snl_config_t ksz8851snl_config = ETH_KSZ8851SNL_DEFAULT_CONFIG(CONFIG_EXAMPLE_ETH_SPI_HOST, &spi_devcfg);
+#if CONFIG_ESP32_VBAN_USE_KSZ8851SNL
+        eth_ksz8851snl_config_t ksz8851snl_config = ETH_KSZ8851SNL_DEFAULT_CONFIG(CONFIG_ESP32_VBAN_ETH_SPI_HOST, &spi_devcfg);
         ksz8851snl_config.int_gpio_num = spi_eth_module_config[i].int_gpio;
         mac_spi[i] = esp_eth_mac_new_ksz8851snl(&ksz8851snl_config, &mac_config_spi);
         phy_spi[i] = esp_eth_phy_new_ksz8851snl(&phy_config_spi);
-#elif CONFIG_EXAMPLE_USE_DM9051
-        eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(CONFIG_EXAMPLE_ETH_SPI_HOST, &spi_devcfg);
+#elif CONFIG_ESP32_VBAN_USE_DM9051
+        eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(CONFIG_ESP32_VBAN_ETH_SPI_HOST, &spi_devcfg);
         dm9051_config.int_gpio_num = spi_eth_module_config[i].int_gpio;
         mac_spi[i] = esp_eth_mac_new_dm9051(&dm9051_config, &mac_config_spi);
         phy_spi[i] = esp_eth_phy_new_dm9051(&phy_config_spi);
-#elif CONFIG_EXAMPLE_USE_W5500
-        eth_w5500_config_t w5500_config = ETH_W5500_DEFAULT_CONFIG(CONFIG_EXAMPLE_ETH_SPI_HOST, &spi_devcfg);
+#elif CONFIG_ESP32_VBAN_USE_W5500
+        eth_w5500_config_t w5500_config = ETH_W5500_DEFAULT_CONFIG(CONFIG_ESP32_VBAN_ETH_SPI_HOST, &spi_devcfg);
         w5500_config.int_gpio_num = spi_eth_module_config[i].int_gpio;
         mac_spi[i] = esp_eth_mac_new_w5500(&w5500_config, &mac_config_spi);
         phy_spi[i] = esp_eth_phy_new_w5500(&phy_config_spi);
@@ -561,14 +561,14 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
 
     /* start Ethernet driver state machine */
-#if CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
+#if CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET
     ESP_ERROR_CHECK(esp_eth_start(eth_handle));
-#endif // CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
-#if CONFIG_EXAMPLE_USE_SPI_ETHERNET
-    for (int i = 0; i < CONFIG_EXAMPLE_SPI_ETHERNETS_NUM; i++) {
+#endif // CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET
+#if CONFIG_ESP32_VBAN_USE_SPI_ETHERNET
+    for (int i = 0; i < CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM; i++) {
         ESP_ERROR_CHECK(esp_eth_start(eth_handle_spi[i]));
     }
-#endif // CONFIG_EXAMPLE_USE_SPI_ETHERNET
+#endif // CONFIG_ESP32_VBAN_USE_SPI_ETHERNET
 
     //init_i2s_tx_only(44100);
 
