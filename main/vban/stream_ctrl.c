@@ -114,6 +114,11 @@ STREAM_CTRL_RC_T StreamCtrl_PrintStats(STREAM_CTRL_T* ptStreamCtrl, const char* 
         return STREAM_CTRL_INVALID_PARAM;
     }
 
+    ESP_LOGI(szTag, "");
+    ESP_LOGI(szTag, "");
+    ESP_LOGI(szTag, "BITRATE_MISSMATCH : %d", ptStreamCtrl->tCounters.uiBitrateMissmatch);
+    ESP_LOGI(szTag, "");
+
     for(unsigned int i = 0; i < STREAM_CTRL_MAX_STREAMS; i++)
     {
         STREAM_T* ptStream = &ptStreamCtrl->atStreams[i];
