@@ -1,5 +1,19 @@
 #include "ethernet.h"
 
+#include "esp_netif.h"
+#include "esp_eth.h"
+#include "esp_event.h"
+
+#include "sdkconfig.h"
+
+#if CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET
+static esp_eth_handle_t eth_handle = NULL;
+#endif /* CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET */
+
+#if CONFIG_ESP32_VBAN_USE_SPI_ETHERNET
+static esp_eth_handle_t eth_handle_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM] = { NULL };
+#endif /* CONFIG_ESP32_VBAN_USE_SPI_ETHERNET */
+
 void Ethernet_Init(void)
 {
 #if CONFIG_ESP32_VBAN_USE_INTERNAL_ETHERNET
@@ -29,7 +43,6 @@ void Ethernet_Init(void)
     esp_eth_phy_t *phy = esp_eth_phy_new_ksz80xx(&phy_config);
 #endif
     esp_eth_config_t config = ETH_DEFAULT_CONFIG(mac, phy);
-    esp_eth_handle_t eth_handle = NULL;
     ESP_ERROR_CHECK(esp_eth_driver_install(&config, &eth_handle));
     /* attach Ethernet driver to TCP/IP stack */
     ESP_ERROR_CHECK(esp_netif_attach(eth_netif, esp_eth_new_netif_glue(eth_handle)));
@@ -83,7 +96,6 @@ void Ethernet_Init(void)
     // Configure SPI interface and Ethernet driver for specific SPI module
     esp_eth_mac_t *mac_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM];
     esp_eth_phy_t *phy_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM];
-    esp_eth_handle_t eth_handle_spi[CONFIG_ESP32_VBAN_SPI_ETHERNETS_NUM] = { NULL };
     spi_device_interface_config_t spi_devcfg = {
         .mode = 0,
         .clock_speed_hz = CONFIG_ESP32_VBAN_ETH_SPI_CLOCK_MHZ * 1000 * 1000,
