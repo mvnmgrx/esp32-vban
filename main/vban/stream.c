@@ -33,11 +33,14 @@ STREAM_RC_T Stream_AddFrame(STREAM_T* ptStream, VBAN_FRAME_T* ptFrame)
         return STREAM_NOT_OKAY;
     }
 
+    /* Copy frame into ringbuffer slot */
     memcpy(ptNextFrame, ptFrame, sizeof(VBAN_FRAME_T));
 
     if(VBAN_RB_OKAY != VBAN_RingBuf_Push(&ptStream->tRingBuf)) {
         return STREAM_NOT_OKAY;
     }
+
+    ptStream->tCounters.uiFrameOk++;
     return STREAM_OKAY;
 }
 
