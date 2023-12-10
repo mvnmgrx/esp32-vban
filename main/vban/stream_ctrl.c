@@ -61,7 +61,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
         }
 
         /* Copy each sample onto the samples in ptFrame */
-        memcpy(VBAN_Frame_GetData(ptFrame), VBAN_Frame_GetData(ptNextFrame));
+        memcpy(VBAN_Frame_GetData(ptFrame), VBAN_Frame_GetData(ptNextFrame), VBAN_Frame_GetDataLen(ptNextFrame));
 
         // pusNextVbanData = (uint16_t*)VBAN_Frame_GetData(ptNextFrame);
         // for(unsigned int uiSample = 0; uiSample < uiNumSamples; uiSample++)
