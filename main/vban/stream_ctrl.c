@@ -57,18 +57,21 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
         uiNumSamples = VBAN_Frame_GetNumSamples(ptNextFrame);
         if(uiNumSamples > VBAN_Frame_GetNumSamples(ptFrame)) {
             ptFrame->tPacket.tHeader.bNumSamples = uiNumSamples;
+            ptFrame->uiTotalLen = ptNextFrame->uiTotalLen;
         }
 
         /* Copy each sample onto the samples in ptFrame */
-        pusNextVbanData = (uint16_t*)VBAN_Frame_GetData(ptNextFrame);
-        for(unsigned int uiSample = 0; uiSample < uiNumSamples; uiSample++)
-        {
-            for(unsigned int y = 0; y < 2; y++) {
-                *pusVbanData += *pusNextVbanData;
-                pusVbanData++;
-                pusNextVbanData++;
-            }
-        }
+        memcpy(VBAN_Frame_GetData(ptFrame), VBAN_Frame_GetData(ptNextFrame));
+
+        // pusNextVbanData = (uint16_t*)VBAN_Frame_GetData(ptNextFrame);
+        // for(unsigned int uiSample = 0; uiSample < uiNumSamples; uiSample++)
+        // {
+        //     for(unsigned int y = 0; y < 2; y++) {
+        //         *pusVbanData += *pusNextVbanData;
+        //         pusVbanData++;
+        //         pusNextVbanData++;
+        //     }
+        // }
 
         /* Confirm that the next frame is handled */
         Stream_ConfirmDataFrame(ptStream);
