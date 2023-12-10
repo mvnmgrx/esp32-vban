@@ -7,6 +7,7 @@
 
 typedef struct STREAM_CTRL_COUNTERS {
     unsigned int uiBitrateMissmatch;
+    unsigned int uiI2SBytesWritten;
 } STREAM_CTRL_COUNTERS_T;
 
 typedef struct STREAM_CTRL {

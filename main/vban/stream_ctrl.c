@@ -17,7 +17,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
     uint16_t* pusVbanData = NULL;
     bool fSomeStreamActive = false;
 
-    if(!ptFrame) {
+    if(!ptStreamCtrl || !ptFrame) {
         return STREAM_CTRL_INVALID_PARAM;
     }
 
@@ -136,6 +136,7 @@ STREAM_CTRL_RC_T StreamCtrl_PrintStats(STREAM_CTRL_T* ptStreamCtrl, const char* 
     ESP_LOGI(szTag, "");
     ESP_LOGI(szTag, "");
     ESP_LOGI(szTag, "BITRATE_MISSMATCH : %d", ptStreamCtrl->tCounters.uiBitrateMissmatch);
+    ESP_LOGI(szTag, "I2S_BYTES_WRITTEN : %d", ptStreamCtrl->tCounters.uiI2SBytesWritten);
     ESP_LOGI(szTag, "");
 
     for(unsigned int i = 0; i < STREAM_CTRL_MAX_STREAMS; i++)

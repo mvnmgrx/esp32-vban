@@ -356,7 +356,7 @@ void audio_write_task(void* ptArgs)
                 break;
             }
         }
-        //s_tCounters.uiI2SBytesWritten += bytesOut;
+        s_tStreamCtrl.tCounters.uiI2SBytesWritten += bytesOut;
         uiNoDataCnt = 0;
     };
 }
