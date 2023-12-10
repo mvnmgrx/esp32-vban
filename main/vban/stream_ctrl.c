@@ -105,6 +105,24 @@ STREAM_CTRL_RC_T StreamCtrl_GetStreamByName(STREAM_CTRL_T* ptStreamCtrl, const c
         break;
     }
 
+    /* No active stream found yet, use next free stream */
+    if(!fSomeStreamActive) 
+    {
+        for(unsigned int i = 0; i < STREAM_CTRL_MAX_STREAMS; i++)
+        {
+            STREAM_T* ptStream = &ptStreamCtrl->atStreams[i];
+            /* Skip active streams */
+            if(ptStream->fActive) {
+                continue;
+            }
+
+            strcpy(ptStream->szName, pszStreamName); 
+            ptStream->fActive = true;
+            *pptStream = ptStream;
+            fSomeStreamActive = true;
+        }
+    }
+
     return fSomeStreamActive ? STREAM_CTRL_OKAY : STREAM_CTRL_NO_DATA;
 }
 
