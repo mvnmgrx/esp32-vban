@@ -315,7 +315,7 @@ void audio_write_task(void* ptArgs)
                     uiNoDataCnt = 0;
                 }
             } 
-            vTaskDelay(1 / portTICK_PERIOD_MS); /* yield */
+            taskYIELD(); /* don't busy-wait and give ethernet task a chance to run */
             continue;
         }
 
@@ -358,6 +358,7 @@ void audio_write_task(void* ptArgs)
         }
         s_tStreamCtrl.tCounters.uiI2SBytesWritten += bytesOut;
         uiNoDataCnt = 0;
+        taskYIELD(); /* don't busy-wait and give ethernet task a chance to run */
     };
 }
 
