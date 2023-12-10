@@ -126,7 +126,7 @@ STREAM_CTRL_RC_T StreamCtrl_PrintStats(STREAM_CTRL_T* ptStreamCtrl, const char* 
         if(ptStream->fActive) {
             ESP_LOGI(szTag, "");
             ESP_LOGI(szTag, "");
-            ESP_LOGI(szTag, "#### STREAM %d", i);
+            ESP_LOGI(szTag, "#### STREAM %d (%s)", i, ptStream->szName);
             ESP_LOGI(szTag, "  FRAME_OK             : %d", ptStream->tCounters.uiFrameOk);
             ESP_LOGI(szTag, "  FRAME_TOO_LONG       : %d", ptStream->tCounters.uiFrameTooLong);
             ESP_LOGI(szTag, "  FRAME_TOO_SHORT      : %d", ptStream->tCounters.uiFrameTooShort);
