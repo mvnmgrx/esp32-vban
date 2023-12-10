@@ -272,6 +272,10 @@ static void udp_server_task(void *pvParameters)
                 VBAN_Frame_SetTotalLength(&tFrame, uiBytesReceived);
                 tFrame.tPacket.tHeader.cStreamName[15] = '\0'; /* null byte termination */
 
+                if(!strcmp(VBAN_Frame_GetStreamName(&tFrame), "VBAN Service")) {
+                    continue;
+                }
+
                 if(STREAM_CTRL_OKAY != StreamCtrl_GetStreamByName(&s_tStreamCtrl, VBAN_Frame_GetStreamName(&tFrame), &ptStream)) {
                   continue;  
                 }
