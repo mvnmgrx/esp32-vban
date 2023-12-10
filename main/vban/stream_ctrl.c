@@ -106,7 +106,7 @@ STREAM_CTRL_RC_T StreamCtrl_GetStreamByName(STREAM_CTRL_T* ptStreamCtrl, const c
     }
 
     /* No active stream found yet, use next free stream */
-    if(!fSomeStreamActive) 
+    if(!fSomeStreamActive)
     {
         for(unsigned int i = 0; i < STREAM_CTRL_MAX_STREAMS; i++)
         {
@@ -116,10 +116,11 @@ STREAM_CTRL_RC_T StreamCtrl_GetStreamByName(STREAM_CTRL_T* ptStreamCtrl, const c
                 continue;
             }
 
-            strcpy(ptStream->szName, pszStreamName); 
+            strcpy(ptStream->szName, pszStreamName);
             ptStream->fActive = true;
             *pptStream = ptStream;
             fSomeStreamActive = true;
+            break;
         }
     }
 
@@ -128,7 +129,7 @@ STREAM_CTRL_RC_T StreamCtrl_GetStreamByName(STREAM_CTRL_T* ptStreamCtrl, const c
 
 STREAM_CTRL_RC_T StreamCtrl_PrintStats(STREAM_CTRL_T* ptStreamCtrl, const char* szTag)
 {
-    if(!ptStreamCtrl) {
+    if(!ptStreamCtrl || !szTag) {
         return STREAM_CTRL_INVALID_PARAM;
     }
 
