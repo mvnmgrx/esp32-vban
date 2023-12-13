@@ -16,6 +16,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
 {
     uint16_t* pusVbanData = NULL;
     bool fSomeStreamActive = false;
+    bool fFirstStream = true;
 
     if(!ptStreamCtrl || !ptFrame) {
         return STREAM_CTRL_INVALID_PARAM;
@@ -48,7 +49,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
         }
 
         /* First stream dictates overall sample rate and codec */
-        if(i == 0) {
+        if(fFirstStream) {
             ptFrame->tPacket.tHeader.bSrSubProto = ptNextFrame->tPacket.tHeader.bSrSubProto;
             ptFrame->tPacket.tHeader.bNumChannels = ptNextFrame->tPacket.tHeader.bNumChannels;
             ptFrame->tPacket.tHeader.bDataFmtCodec = ptNextFrame->tPacket.tHeader.bDataFmtCodec;
@@ -63,22 +64,27 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
             ptFrame->uiTotalLen = ptNextFrame->uiTotalLen;
         }
 
-        /* Copy each sample onto the samples in ptFrame */
-        memcpy(VBAN_Frame_GetData(ptFrame), VBAN_Frame_GetData(ptNextFrame), VBAN_Frame_GetDataLen(ptNextFrame));
-
-        // pusNextVbanData = (uint16_t*)VBAN_Frame_GetData(ptNextFrame);
-        // for(unsigned int uiSample = 0; uiSample < uiNumSamples; uiSample++)
-        // {
-        //     for(unsigned int y = 0; y < 2; y++) {
-        //         *pusVbanData += *pusNextVbanData;
-        //         pusVbanData++;
-        //         pusNextVbanData++;
-        //     }
-        // }
+        if(fFirstStream) {
+            /* Copy first stream frame initially into outgoing frame */
+            memcpy(VBAN_Frame_GetData(ptFrame), VBAN_Frame_GetData(ptNextFrame), VBAN_Frame_GetDataLen(ptNextFrame));
+        }
+        else {
+            /* Add other streams to the outgoing frame */
+            pusNextVbanData = (uint16_t*)VBAN_Frame_GetData(ptNextFrame);
+            for(unsigned int uiSample = 0; uiSample < uiNumSamples; uiSample++)
+            {
+                for(unsigned int y = 0; y < 2; y++) {
+                    *pusVbanData += *pusNextVbanData;
+                    pusVbanData++;
+                    pusNextVbanData++;
+                }
+            }
+        }
 
         /* Confirm that the next frame is handled */
         Stream_ConfirmDataFrame(ptStream);
         fSomeStreamActive = true;
+        fFirstStream = false;
     }
 
     return fSomeStreamActive ? STREAM_CTRL_OKAY : STREAM_CTRL_NO_DATA;
