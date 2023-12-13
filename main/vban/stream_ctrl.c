@@ -43,6 +43,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
         /* Only supports 16 bit frames for now */
         if(VBAN_BIT_RES_INT16 != VBAN_Frame_GetBitResolution(ptNextFrame)) {
             ptStreamCtrl->tCounters.uiBitrateMissmatch++;
+            Stream_ConfirmDataFrame(ptStream);
             continue;
         }
 
@@ -51,6 +52,8 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
             ptFrame->tPacket.tHeader.bSrSubProto = ptNextFrame->tPacket.tHeader.bSrSubProto;
             ptFrame->tPacket.tHeader.bNumChannels = ptNextFrame->tPacket.tHeader.bNumChannels;
             ptFrame->tPacket.tHeader.bDataFmtCodec = ptNextFrame->tPacket.tHeader.bDataFmtCodec;
+            ptFrame->tPacket.tHeader.bNumSamples = ptNextFrame->tPacket.theader.bNumSamples;
+            ptFrame->uiTotalLen = ptNextFrame->uiTotalLen;
         }
 
         /* Update number of samples if needed */
