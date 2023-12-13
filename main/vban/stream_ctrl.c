@@ -52,7 +52,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
             ptFrame->tPacket.tHeader.bSrSubProto = ptNextFrame->tPacket.tHeader.bSrSubProto;
             ptFrame->tPacket.tHeader.bNumChannels = ptNextFrame->tPacket.tHeader.bNumChannels;
             ptFrame->tPacket.tHeader.bDataFmtCodec = ptNextFrame->tPacket.tHeader.bDataFmtCodec;
-            ptFrame->tPacket.tHeader.bNumSamples = ptNextFrame->tPacket.theader.bNumSamples;
+            ptFrame->tPacket.tHeader.bNumSamples = ptNextFrame->tPacket.tHeader.bNumSamples;
             ptFrame->uiTotalLen = ptNextFrame->uiTotalLen;
         }
 
