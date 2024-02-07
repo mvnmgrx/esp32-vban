@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "ethernet.h": "c",
+        "stream_ctrl.h": "c"
+    },
+    "cmake.configureOnOpen": false,
+    "idf.adapterTargetName": "esp32",
+    "idf.flashType": "UART",
+    "idf.portWin": "COM3"
+}

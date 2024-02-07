@@ -35,5 +35,6 @@ typedef enum STREAM_RC {
 STREAM_RC_T Stream_AddFrame(STREAM_T* ptStream, VBAN_FRAME_T* ptFrame);
 STREAM_RC_T Stream_GetNextDataFrame(STREAM_T* ptStream, VBAN_FRAME_T** pptFrame);
 STREAM_RC_T Stream_ConfirmDataFrame(STREAM_T* ptStream);
+STREAM_RC_T Stream_Deinit(STREAM_T* ptStream);
 
 #endif /* STREAM_H */

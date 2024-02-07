@@ -2,13 +2,28 @@
 #include <stddef.h>
 
 #include "esp_log.h"
+static const char *TAG = "vban";
 
 #include "stream.h"
 #include "stream_ctrl.h"
 
 STREAM_CTRL_RC_T StreamCtrl_Update(STREAM_CTRL_T* ptStreamCtrl)
 {
-    /* to be implemented */
+    if (!ptStreamCtrl) {
+        return STREAM_CTRL_INVALID_PARAM;
+    }
+
+    for (unsigned int i = 0; i < STREAM_CTRL_MAX_STREAMS; i++) {
+        STREAM_T* ptStream = &ptStreamCtrl->atStreams[i];
+
+        /* Check if the stream is inactive and needs to be removed */
+        if (ptStream->fActive && ptStream->tCounters.uiBufferUnderflow > 100) {
+            ESP_LOGI(TAG, "Inactive Stream: Deinit Stream %s", ptStream->szName);
+            Stream_Deinit(ptStream);
+            ptStream->fActive = false;
+        }
+    }
+
     return STREAM_CTRL_OKAY;
 }
 
@@ -23,6 +38,7 @@ STREAM_CTRL_RC_T StreamCtrl_ComputeNextFrame(STREAM_CTRL_T* ptStreamCtrl, VBAN_F
     }
 
     pusVbanData = (uint16_t*)VBAN_Frame_GetData(ptFrame);
+    
 
     for(unsigned int i = 0; i < STREAM_CTRL_MAX_STREAMS; i++)
     {

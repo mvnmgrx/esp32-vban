@@ -298,6 +298,7 @@ void task_print_stats(void* ptArgs)
     while(1)
     {
         StreamCtrl_PrintStats(&s_tStreamCtrl, TAG);
+        StreamCtrl_Update(&s_tStreamCtrl);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -319,8 +320,10 @@ void audio_write_task(void* ptArgs)
                     uiNoDataCnt = 0;
                 }
             } 
-            taskYIELD(); /* don't busy-wait and give ethernet task a chance to run */
+            vTaskDelay(10 / portTICK_PERIOD_MS);  /* don't busy-wait and give ethernet task a chance to run */
             continue;
+            // taskYIELD(); /* don't busy-wait and give ethernet task a chance to run /// OLD */
+            // continue;
         }
 
         /* If necessary, reconfigre I2S to match VBAN format */
@@ -362,6 +365,7 @@ void audio_write_task(void* ptArgs)
         }
         s_tStreamCtrl.tCounters.uiI2SBytesWritten += bytesOut;
         uiNoDataCnt = 0;
+        
         taskYIELD(); /* don't busy-wait and give ethernet task a chance to run */
     };
 }
@@ -384,7 +388,7 @@ void app_main(void)
     //init_i2s_tx_only(44100);
 
     xTaskCreate(udp_server_task, "udp_server", 4096, (void*)AF_INET, 5, NULL);
-    xTaskCreate(audio_write_task, "audio", 4096, NULL, 4, NULL);
+    xTaskCreate(audio_write_task, "audio", 4096, NULL, configMAX_PRIORITIES - 1, NULL);
     xTaskCreate(task_print_stats, "stats", 4096, NULL, 0, NULL);
 
     esp_task_wdt_deinit();

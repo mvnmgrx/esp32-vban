@@ -63,3 +63,17 @@ STREAM_RC_T Stream_ConfirmDataFrame(STREAM_T* ptStream)
 {
     return VBAN_RingBuf_Pop(&ptStream->tRingBuf) ? STREAM_NOT_OKAY : STREAM_OKAY;
 }
+
+STREAM_RC_T Stream_Deinit(STREAM_T* ptStream) {
+    if (!ptStream) {
+        return STREAM_NOT_OKAY;  // Invalid or inactive stream
+    }
+
+    // Clear the stream data and counters
+    memset(ptStream->szName, 0, sizeof(ptStream->szName));
+    memset(&ptStream->tCounters, 0, sizeof(STREAM_COUNTERS_T));
+
+    ptStream->fActive = false;  // Mark the stream as inactive
+
+    return STREAM_OKAY;
+}
